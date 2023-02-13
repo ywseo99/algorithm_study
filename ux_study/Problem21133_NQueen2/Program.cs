@@ -77,38 +77,96 @@ bool move(byte[] arr, int row = 0)
 
 List<int> values = new List<int>();
 
+
+
 void PickAnswer(int n = 10)
 {
-    Random rand = new Random();
 
-    for (int index = 0; index < n; index++)
+    // 중간정도의 짝수 값부터 시작해본다.
+
+    
+    int begin_col = 0;
+
+    if (n % 2 == 0)
     {
-        values.Add(index);
+        begin_col = n / 2 - 1;
+    }
+    else
+    {
+        begin_col = (n + 1) / 2 - 1;
     }
 
-    int prev = 0;
-    
-    for (int index = 0; index < n; index++)
+    Console.WriteLine("begin_col : {0}", begin_col);
+
+
+    int delta = 2;
+    int limit_col = 0;
+
+    limit_col = begin_col + n;
+    Random rand = new Random();
+
+    int cnt = 1;
+    for (int row = 1; row < n; row ++)
     {
-        
-        PICK_AGAIN: 
-        int rand_index = rand.Next(0, values.Count);
-        Console.WriteLine("index: {0}, value: {1}", index, values[rand_index]);
+        // 역적되지 않는다면 begin_col + 2씩 증가
 
-        // 랜덤하게 하나를 뽑고 후보들을 지워나간다. 
-        
 
-        if (index == 0)
+        int col = begin_col + delta * cnt;
+        
+        // 유효 범위 안에 들어온 경우 
+        if (col > begin_col && 
+            col < limit_col)
         {
-            prev = values[rand_index];
+            cnt++;
         }
         else
         {
-            if ((prev - 1) == values[rand_index]) goto PICK_AGAIN;
-            if ((prev + 1) == values[rand_index]) goto PICK_AGAIN;
+            // 유효한 범위를 벗어난 경우 
+            delta = delta + 1;
+            cnt = 1;
+
+            col = begin_col + delta;
         }
-        values.Remove(values[rand_index]);
+
+        if (col <= (n - 1))
+        {
+            Console.WriteLine(" row: {0}, col: {1}", row, col);
+        }
+        else
+        {
+            Console.WriteLine(" row: {0}, col: {1}", row, col % (n - 1));
+        }
     }
+    
+
+    //for (int index = 0; index < n; index++)
+    //{
+    //    values.Add(index);
+    //}
+
+    //int prev = 0;
+    
+    //for (int index = 0; index < n; index++)
+    //{
+        
+    //    PICK_AGAIN: 
+    //    int rand_index = rand.Next(0, values.Count);
+    //    Console.WriteLine("index: {0}, value: {1}", index, values[rand_index]);
+
+    //    // 랜덤하게 하나를 뽑고 후보들을 지워나간다. 
+        
+
+    //    if (index == 0)
+    //    {
+    //        prev = values[rand_index];
+    //    }
+    //    else
+    //    {
+    //        if ((prev - 1) == values[rand_index]) goto PICK_AGAIN;
+    //        if ((prev + 1) == values[rand_index]) goto PICK_AGAIN;
+    //    }
+    //    values.Remove(values[rand_index]);
+    //}
 }
 
 
