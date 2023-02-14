@@ -8,7 +8,7 @@ int[] answer;
 
 void MSG(string msg, params object[] args)
 {
-    Console.WriteLine(msg, args);
+    //Console.WriteLine(msg, args);
 }
 
 
@@ -100,7 +100,6 @@ move(arr);
 
 foreach (string _answer in arr_answer)
 {
-    MSG("\t {0}", _answer);
     string[] words = _answer.Split(",");
     StringBuilder sb = new StringBuilder();
     sb.AppendFormat(" answer : {0}\n", _answer);
@@ -114,7 +113,7 @@ foreach (string _answer in arr_answer)
         }
         sb.AppendFormat("\n");
     }
-    sb.AppendFormat("\n");
-    MSG(sb.ToString());
+    sb.AppendFormat("\n");    
+    Console.WriteLine(sb.ToString());
 }
 MSG("result : {0}", arr_answer.Count);
