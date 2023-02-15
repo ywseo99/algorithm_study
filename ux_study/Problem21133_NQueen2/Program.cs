@@ -281,13 +281,15 @@ List<int> arr_invalid = new List<int>();
         arr_invalid.Add(n);
     }
 }
+Console.WriteLine(string.Join("\n", arr));
+
 
 //foreach (int _invalid in arr_invalid)
 //{
 //    Console.Write("{0},", _invalid);
 //}
 
-Console.WriteLine(string.Join("\n", arr));
+
 //foreach (int _answer in arr)
 //{
 //    Console.WriteLine("{0}", _answer);
