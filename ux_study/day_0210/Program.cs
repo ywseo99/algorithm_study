@@ -1,6 +1,6 @@
-﻿
+﻿//#define SOLVE
 
-using System.Security.Cryptography;
+
 using System.Text;
 
 List<string> arr_answer = new List<string>();
@@ -87,17 +87,14 @@ bool move(byte[] arr, int row = 0)
     return false;
 }
 
-
+#if SOLVE
 int n = 8;
-
 string input = Console.ReadLine();
 int.TryParse(input, out n);
 
 byte[] arr = new byte[n];
 answer = new int[n];
 move(arr);
-
-
 foreach (string _answer in arr_answer)
 {
     string[] words = _answer.Split(",");
@@ -117,3 +114,33 @@ foreach (string _answer in arr_answer)
     Console.WriteLine(sb.ToString());
 }
 MSG("result : {0}", arr_answer.Count);
+#else
+int n = 8;
+string input = Console.ReadLine();
+int.TryParse(input, out n);
+
+byte[] arr = new byte[n];
+answer = new int[n];
+move(arr);
+foreach (string _answer in arr_answer)
+{
+    string[] words = _answer.Split(",");
+    StringBuilder sb = new StringBuilder();
+    sb.AppendFormat(" answer : {0}\n", _answer);
+    foreach (string word in words)
+    {
+        int col = int.Parse(word);
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (col == i) sb.AppendFormat("■ ");
+            else sb.AppendFormat("_ ");
+        }
+        sb.AppendFormat("\n");
+    }
+    sb.AppendFormat("\n");    
+    Console.WriteLine(sb.ToString());
+}
+MSG("result : {0}", arr_answer.Count);
+
+
+#endif
