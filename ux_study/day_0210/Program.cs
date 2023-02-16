@@ -8,7 +8,10 @@ int[] answer;
 
 void MSG(string msg, params object[] args)
 {
-    //Console.WriteLine(msg, args);
+#if SOLVE
+#else
+    Console.WriteLine(msg, args);
+#endif
 }
 
 
@@ -16,7 +19,7 @@ bool move(byte[] arr, int row = 0)
 {
     if (row >= arr.Length)
     {
-        MSG(" end. row: {0}\n", row);
+        //MSG(" end. row: {0}\n", row);
         return true;
     }
 
@@ -34,7 +37,6 @@ bool move(byte[] arr, int row = 0)
      */
 
     // 현재 row 값으로 다음 row를 계산한다
-    bool col_exist = false;
     for (int col = 0; col < arr.Length; col++)
     {
         byte[] next_arr = new byte[arr.Length];
@@ -64,24 +66,17 @@ bool move(byte[] arr, int row = 0)
 
         answer[row] = col;
 
-        MSG("\t ---> Queen place row:{0}, col:{1}", row, col);
-        MSG("\t      row:{0}, curr_row:{1}", row, string.Join(",", arr));
-        MSG("\t      row:{0}, next_row:{1}", row + 1, string.Join(",", next_arr));
+        //MSG("\t ---> Queen place row:{0}, col:{1}", row, col);
+        //MSG("\t      row:{0}, curr_row:{1}", row, string.Join(",", arr));
+        //MSG("\t      row:{0}, next_row:{1}", row + 1, string.Join(",", next_arr));
 
 
         bool ret = move(next_arr, row + 1);
-
-        col_exist = true;        
         if (ret == true)
         {
             arr_answer.Add(string.Join(",", answer));
-            MSG("\t\t FOUND ANSWER. {0}\n\n", string.Join(",", answer));
+            //MSG("\t\t FOUND ANSWER. {0}\n\n", string.Join(",", answer));
         }
-    }
-
-    if (col_exist == false)
-    {
-        MSG("\t FAIL. Cannot locate Queen. row:{0} \n", row);
     }
 
     return false;
@@ -91,33 +86,18 @@ bool move(byte[] arr, int row = 0)
 int n = 8;
 string input = Console.ReadLine();
 int.TryParse(input, out n);
-
 byte[] arr = new byte[n];
 answer = new int[n];
 move(arr);
-foreach (string _answer in arr_answer)
-{
-    string[] words = _answer.Split(",");
-    StringBuilder sb = new StringBuilder();
-    sb.AppendFormat(" answer : {0}\n", _answer);
-    foreach (string word in words)
-    {
-        int col = int.Parse(word);
-        for (int i = 0; i < words.Length; i++)
-        {
-            if (col == i) sb.AppendFormat("■ ");
-            else sb.AppendFormat("_ ");
-        }
-        sb.AppendFormat("\n");
-    }
-    sb.AppendFormat("\n");    
-    Console.WriteLine(sb.ToString());
-}
-MSG("result : {0}", arr_answer.Count);
+Console.WriteLine("{0}", arr_answer.Count);
 #else
+
 int n = 8;
 string input = Console.ReadLine();
-int.TryParse(input, out n);
+n = int.Parse(input);
+
+
+MSG("n : {0}", n);
 
 byte[] arr = new byte[n];
 answer = new int[n];
@@ -126,7 +106,7 @@ foreach (string _answer in arr_answer)
 {
     string[] words = _answer.Split(",");
     StringBuilder sb = new StringBuilder();
-    sb.AppendFormat(" answer : {0}\n", _answer);
+    sb.AppendFormat("answer : {0}\n", _answer);
     foreach (string word in words)
     {
         int col = int.Parse(word);
@@ -137,10 +117,8 @@ foreach (string _answer in arr_answer)
         }
         sb.AppendFormat("\n");
     }
-    sb.AppendFormat("\n");    
     Console.WriteLine(sb.ToString());
 }
 MSG("result : {0}", arr_answer.Count);
-
 
 #endif

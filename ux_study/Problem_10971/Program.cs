@@ -1,6 +1,92 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿//#define SOLVE
 
 
+#if SOLVE 
+string? input = Console.ReadLine();
+int n = 0;
+int.TryParse(input, out n);
+int[,] city = new int[n, n];
+
+
+for (int i = 0; i < n; i++)
+{
+    input = Console.ReadLine();
+    string[] words = input!.Split(" ");
+    for (int j = 0; j < words.Length; j++)
+    {
+        city[i, j] = int.Parse(words[j]);
+    }
+}
+
+
+List<int> stack = new List<int>();
+int min_cost = 100000000;
+
+bool move(List<int> _stack)
+{
+    if (_stack.Count >= n)
+    {
+        int cost = 0;
+        int city_from = -1;
+        int city_begin = -1;
+        int city_to = 0;
+        bool invalid_path = false;
+        for (int i = 0; i < _stack.Count; i++)
+        {
+            if (city_begin < 0)
+            {
+                city_begin = _stack.ElementAt(n - i - 1);
+                city_from = city_begin;
+                continue;
+            }
+
+            city_to = _stack.ElementAt(n - i - 1);
+
+            if (city[city_from, city_to] == 0)
+            {
+                // 비용이 0인 경우는 갈 수 없는 경로이다.
+                invalid_path = true;
+            }
+
+            cost += city[city_from, city_to];
+            city_from = city_to;
+        }
+
+        if (city[city_to, city_begin] == 0)
+        {
+            invalid_path = true;
+        }
+
+        cost += city[city_to, city_begin];
+        if (invalid_path == false)
+        {
+            if (cost <= min_cost)
+            {
+                min_cost = cost;
+            }
+        }
+        return true;
+    }
+
+    for (int col = 0; col < n; col++)
+    {
+        if (_stack.Contains(col) == true)
+        {
+            continue;
+        }
+        _stack.Add(col);
+        if (move(_stack) == true)
+        {
+            _stack.RemoveAt(_stack.Count - 1);
+        }
+    }
+    return true;
+}
+
+move(stack);
+Console.WriteLine(min_cost);
+////Console.WriteLine("{0}", arr_cost.Min());
+#else
 
 
 //input 
@@ -199,90 +285,5 @@ Console.WriteLine(" min_cost: {0}, {1}", min_cost, min_value);
 sw.Stop();
 Console.WriteLine(" elapsed {0:N0} ms", sw.ElapsedMilliseconds);
 
+#endif
 
-
-
-//string? input = Console.ReadLine();
-//int n = 0;
-//int.TryParse(input, out n);
-//int[,] city = new int[n, n];
-
-
-//for (int i = 0; i < n; i++)
-//{
-//    input = Console.ReadLine();
-//    string[] words = input!.Split(" ");
-//    for (int j = 0; j < words.Length; j++)
-//    {
-//        city[i, j] = int.Parse(words[j]);
-//    }
-//}
-
-
-//List<int> stack = new List<int>();
-//int min_cost = 100000000;
-
-//bool move(List<int> _stack)
-//{
-//    if (_stack.Count >= n)
-//    {
-//        int cost = 0;
-//        int city_from = -1;
-//        int city_begin = -1;
-//        int city_to = 0;
-//        bool invalid_path = false;
-//        for (int i = 0; i < _stack.Count; i++)
-//        {
-//            if (city_begin < 0)
-//            {
-//                city_begin = _stack.ElementAt(n - i - 1);
-//                city_from = city_begin;
-//                continue;
-//            }
-            
-//            city_to = _stack.ElementAt(n - i - 1);
-
-//            if (city[city_from, city_to] == 0)
-//            {
-//                // 비용이 0인 경우는 갈 수 없는 경로이다.
-//                invalid_path = true;
-//            }
-
-//            cost += city[city_from, city_to];
-//            city_from = city_to;
-//        }
-
-//        if (city[city_to, city_begin] == 0)
-//        {
-//            invalid_path = true;
-//        }
-
-//        cost += city[city_to, city_begin];
-//        if (invalid_path == false)
-//        {
-//            if (cost <= min_cost)
-//            {
-//                min_cost = cost;
-//            }
-//        }
-//        return true;
-//    }
-
-//    for (int col = 0; col < n; col++)
-//    {
-//        if (_stack.Contains(col) == true)
-//        {
-//            continue;
-//        }
-//        _stack.Add(col);
-//        if (move(_stack) == true)
-//        {
-//            _stack.RemoveAt(_stack.Count - 1);
-//        }
-//    }
-//    return true;
-//}
-
-//move(stack);
-//Console.WriteLine(min_cost);
-//////Console.WriteLine("{0}", arr_cost.Min());
