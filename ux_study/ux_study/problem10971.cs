@@ -16,7 +16,7 @@ namespace ux_study
         }
 
         Dictionary<string, int> answers = new Dictionary<string, int>();
-        int n = 4;
+        static int n = 4;
         int[,] city = new int[n, n];
 
 
@@ -101,10 +101,10 @@ namespace ux_study
 
 
 
-            string[] lines = problem.Split("\n");
+            string[] lines = problem.Split('\n');
             for (int i = 0; i < lines.Length; i++)
             {
-                string[] words = lines[i].Split(" ");
+                string[] words = lines[i].Split(' ');
                 for (int j = 0; j < words.Length; j++)
                 {
                     city[i, j] = int.Parse(words[j]);

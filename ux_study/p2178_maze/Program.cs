@@ -1,5 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿//#define SOLVE
+//#define RECURSIVE
 
 /*
 N×M크기의 배열로 표현되는 미로가 있다.
@@ -67,17 +67,253 @@ N×M크기의 배열로 표현되는 미로가 있다.
 
 */
 
-int m = 4;
-int n = 6;
+#if SOLVE
 
-string str_maze = @"101111
-101010
-101011
-111011";
+using System.Drawing;
+using System.Text;
 
-string[] lines = str_maze.Split("\n");
 
+int min_cost = 1000000;
+string input = Console.ReadLine();
+string[] mn = input.Split(" ", StringSplitOptions.TrimEntries);
+int m = int.Parse(mn[0]);
+int n = int.Parse(mn[1]);
+
+// m번의 입력 라인 받기
 int[,] maze = new int[m, n];
+for (int row = 0; row < m; row++)
+{
+    string line = Console.ReadLine();
+    for (int c = 0; c < line.Trim().Length; c++)
+    {
+        if (line[c] == '1')
+            maze[row, c] = 1;
+        else
+            maze[row, c] = 0;
+    }
+}
+
+
+bool move(int x, int y, int[,] _maze, List<Point> _arr_pt)
+{
+    // 만약 비용이 이미 최소값을 초과한 경우 탐색을 포기한다.
+    if (_arr_pt.Count >= min_cost)
+    {
+        return false;
+    }
+
+    _arr_pt.Add(new Point(x, y));
+
+    if (x == n - 1 && y == m - 1)
+    {
+        if (_arr_pt.Count < min_cost)
+        {
+            min_cost = _arr_pt.Count;
+        }
+        _arr_pt.RemoveAt(_arr_pt.Count - 1);
+        return true;
+    }
+
+    // 진행할 수 있는 셀들을 찾는다.    
+    {
+        // move up
+        int next_y = y - 1;
+        if (next_y >= 0 &&
+            _maze[next_y, x] != 0)
+        {
+            move(x, next_y, _maze, _arr_pt);
+        }
+    }
+    {
+        // move down
+        int next_y = y + 1;
+        if (next_y < m &&
+            _maze[next_y, x] != 0)
+        {
+            move(x, next_y, _maze, _arr_pt);
+        }
+    }
+    {
+        // move left
+        int next_x = x - 1;
+        if (next_x >= 0 &&
+            _maze[y, next_x] != 0)
+        {
+            move(next_x, y, _maze, _arr_pt);
+        }
+    }
+    {
+        // move right
+        int next_x = x + 1;
+        if (next_x < n &&
+            _maze[y, next_x] != 0)
+        {
+            move(next_x, y, _maze, _arr_pt);
+        }
+    }
+    _arr_pt.RemoveAt(_arr_pt.Count - 1);
+    return false;
+}
+
+List<Point> arr_pt = new List<Point>();
+move(0, 0, maze, arr_pt);
+Console.WriteLine(min_cost);
+
+#elif RECURSIVE
+
+using System.Diagnostics;
+using System.Drawing;
+using System.Text;
+
+int min_cost = 1000000;
+
+//int m = 4;
+//int n = 6;
+
+//string str_maze = @"101111
+//101010
+//101011
+//111011";
+
+//int m = 8;
+//int n = 8;
+//string str_maze = @"10111111
+//11111011
+//10010011
+//10010011
+//10110011
+//10100011
+//10100011
+//11111111";
+
+
+int m = 120;
+int n = 25;
+string str_maze = @"1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101";
+
+
+string[] lines = str_maze.Split("\n", StringSplitOptions.TrimEntries);
+int[,] maze = new int[m, n];
+
 
 for (int row = 0; row < lines.Length; row++)
 {
@@ -93,5 +329,255 @@ for (int row = 0; row < lines.Length; row++)
     }
 }
 
-Console.WriteLine("Hello, World!");
-Console.ReadKey();
+
+void print_maze(int[,] _maze)
+{
+    StringBuilder sb = new StringBuilder();
+    int _m = _maze.GetLength(0);
+    int _n = _maze.GetLength(1);
+
+    sb.AppendFormat(" m: {0}, n: {1} \n", _m, _n);
+    for (int row = 0; row < _m; row++)
+    {
+        for (int col = 0; col < _n; col++)
+        {
+            sb.AppendFormat("{0,2:x} ", _maze[row, col]);
+        }
+        sb.AppendFormat("\n");
+    }
+    Console.WriteLine(sb.ToString());
+}
+
+
+bool move(Point pt, int[,] _maze, Stack<Point> _arr_pt)
+{
+    int _m = _maze.GetLength(0);
+    int _n = _maze.GetLength(1);
+
+    // 만약 비용이 이미 최소값을 초과한 경우 탐색을 포기한다.
+    if (_arr_pt.Count >= min_cost)
+    {
+        //Console.WriteLine("탐색포기. 비용쵸과 min_cost:{0}", min_cost);        
+        return false;
+    }
+
+    _arr_pt.Push(pt);
+
+    //Console.WriteLine("move [{0},{1}]", pt.Y, pt.Y);
+    if (pt.X == _n - 1 && 
+        pt.Y == _m - 1)
+    {
+        //Console.WriteLine("--- Found destination ----");
+        //Console.WriteLine(" path: {0}", string.Join(",", _arr_pt));
+        //Console.WriteLine(" cost: {0}", _arr_pt.Count);
+        _arr_pt.Pop();
+
+        // 최소값 갱신
+        if (_arr_pt.Count < min_cost)
+        {
+            Console.WriteLine("최소값 갱신: {0} -> {1}", min_cost, _arr_pt.Count);
+            min_cost = _arr_pt.Count;
+         
+        }
+        return true;
+    }
+
+    // 진행할 수 있는 셀들을 찾는다.    
+    {
+        // move up
+        Point next_pt = new Point(pt.X, pt.Y - 1);        
+        if (next_pt.Y >= 0 &&
+            _maze[next_pt.Y, next_pt.X] != 0 &&
+            _arr_pt.Contains(next_pt) == false)
+        {            
+            move(next_pt, _maze, _arr_pt);            
+        }
+    }
+    {
+        // move down
+        Point next_pt = new Point(pt.X, pt.Y + 1);
+        if (next_pt.Y < _m &&
+            _maze[next_pt.Y, next_pt.X] != 0 &&
+            _arr_pt.Contains(next_pt) == false)
+        {
+            move(next_pt, _maze, _arr_pt);
+        }
+    }
+    {
+        // move left
+        Point next_pt = new Point(pt.X - 1, pt.Y);
+        if (next_pt.X >= 0 &&
+            _maze[next_pt.Y, next_pt.X] != 0 &&
+            _arr_pt.Contains(next_pt) == false)
+        {
+            move(next_pt, _maze, _arr_pt);
+        }
+    }
+    {
+        // move right
+        Point next_pt = new Point(pt.X + 1, pt.Y);
+        if (next_pt.X < _n &&
+            _maze[next_pt.Y, next_pt.X] != 0 &&
+            _arr_pt.Contains(next_pt) == false)
+        {
+            move(next_pt, _maze, _arr_pt);
+        }
+    }
+
+
+    // 끝을 (m,n)을 찾았다면 true 리턴
+    // 못찾고 갈길이 없는 경우 false 리턴
+    //Console.WriteLine("더이상 갈 곳이 없다. y:{0}, x:{1}", pt.Y, pt.X);
+    _arr_pt.Pop();
+    return false;
+}
+
+
+print_maze(maze);
+
+Stopwatch sw = Stopwatch.StartNew();
+Console.WriteLine("begin");
+Stack<Point> arr_pt = new Stack<Point>();
+move(new Point(0, 0), maze, arr_pt);
+Console.WriteLine("최소경로: {0}", min_cost);
+
+sw.Stop();
+Console.WriteLine("elapsed {0:N0} ms", sw.ElapsedMilliseconds);
+
+#else
+
+using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Text;
+
+int min_cost = 1000000;
+
+
+int m = 10;
+int n = 25;
+string str_maze = @"1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101
+1011101110111011101110111
+1110111011101110111011101";
+
+
+string[] lines = str_maze.Split("\n", StringSplitOptions.TrimEntries);
+int[,] maze = new int[m, n];
+
+
+for (int row = 0; row < lines.Length; row++)
+{
+    string line = lines[row].Trim();
+
+    for (int c = 0; c < line.Length; c++)
+    {
+        if (line[c] == '1')
+            maze[row, c] = 1;
+        else
+            maze[row, c] = 0;
+
+    }
+}
+
+bool is_valid_cell(int row, int col)
+{
+    if (row < 0 || row >= maze.GetLength(0))
+        return false;
+    if (col < 0 || col >= maze.GetLength(1))
+        return false;
+
+    return true;
+}
+
+for (int row = 0; row < m; row++ )
+{
+    for (int col = 0; col < n; col++)
+    {
+        // 끊긴 길 제거
+        // 최소 주변에 1이 2개 이상 있어야 한다.
+        int one_count = 0;
+
+        {
+            // up cell
+            int row2 = row - 1;
+            if (is_valid_cell(row2, col))
+            {
+                if (maze[row2, col] == 1) one_count++;
+            }
+        }
+        {
+            // down cell
+            int row2 = row + 1;
+            if (is_valid_cell(row2, col))
+            {
+                if (maze[row2, col] == 1) one_count++;
+            }
+        }
+        {
+            // left cell
+
+        }
+
+    }
+}
+
+
+void print_maze(int[,] _maze)
+{
+    StringBuilder sb = new StringBuilder();
+    int _m = _maze.GetLength(0);
+    int _n = _maze.GetLength(1);
+
+    sb.AppendFormat(" m: {0}, n: {1} \n", _m, _n);
+    for (int row = 0; row < _m; row++)
+    {
+        for (int col = 0; col < _n; col++)
+        {
+            sb.AppendFormat("{0,2:x} ", _maze[row, col]);
+        }
+        sb.AppendFormat("\n");
+    }
+    Console.WriteLine(sb.ToString());
+}
+
+
+void move()
+{
+    int cost = 0;
+    
+    // 만약 비용이 이미 최소값을 초과한 경우 탐색을 포기한다.
+    if (cost >= min_cost)
+    {
+        //Console.WriteLine("탐색포기. 비용쵸과 min_cost:{0}", min_cost);        
+     
+    }
+
+    int row = 0;
+    int col = 0;
+
+
+
+}
+
+
+print_maze(maze);
+
+Stopwatch sw = Stopwatch.StartNew();
+Console.WriteLine("begin");
+Stack<Point> arr_pt = new Stack<Point>();
+
+move();
+
+Console.WriteLine("최소경로: {0}", min_cost);
+
+sw.Stop();
+Console.WriteLine("elapsed {0:N0} ms", sw.ElapsedMilliseconds);
+
+#endif
