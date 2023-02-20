@@ -1,4 +1,4 @@
-﻿//#define SOLVE
+﻿#define SOLVE
 //#define RECURSIVE
 
 /*
@@ -69,8 +69,8 @@ N×M크기의 배열로 표현되는 미로가 있다.
 
 #if SOLVE
 
+using System.Collections.Concurrent;
 using System.Drawing;
-using System.Text;
 
 
 int min_cost = 1000000;
@@ -80,6 +80,7 @@ int m = int.Parse(mn[0]);
 int n = int.Parse(mn[1]);
 
 // m번의 입력 라인 받기
+int[,] pathmap = new int[m, n];
 int[,] maze = new int[m, n];
 for (int row = 0; row < m; row++)
 {
@@ -94,69 +95,73 @@ for (int row = 0; row < m; row++)
 }
 
 
-bool move(int x, int y, int[,] _maze, List<Point> _arr_pt)
+bool is_valid_cell(int row, int col)
 {
-    // 만약 비용이 이미 최소값을 초과한 경우 탐색을 포기한다.
-    if (_arr_pt.Count >= min_cost)
-    {
+    if (row < 0 || row >= maze.GetLength(0))
         return false;
-    }
+    if (col < 0 || col >= maze.GetLength(1))
+        return false;
 
-    _arr_pt.Add(new Point(x, y));
-
-    if (x == n - 1 && y == m - 1)
-    {
-        if (_arr_pt.Count < min_cost)
-        {
-            min_cost = _arr_pt.Count;
-        }
-        _arr_pt.RemoveAt(_arr_pt.Count - 1);
-        return true;
-    }
-
-    // 진행할 수 있는 셀들을 찾는다.    
-    {
-        // move up
-        int next_y = y - 1;
-        if (next_y >= 0 &&
-            _maze[next_y, x] != 0)
-        {
-            move(x, next_y, _maze, _arr_pt);
-        }
-    }
-    {
-        // move down
-        int next_y = y + 1;
-        if (next_y < m &&
-            _maze[next_y, x] != 0)
-        {
-            move(x, next_y, _maze, _arr_pt);
-        }
-    }
-    {
-        // move left
-        int next_x = x - 1;
-        if (next_x >= 0 &&
-            _maze[y, next_x] != 0)
-        {
-            move(next_x, y, _maze, _arr_pt);
-        }
-    }
-    {
-        // move right
-        int next_x = x + 1;
-        if (next_x < n &&
-            _maze[y, next_x] != 0)
-        {
-            move(next_x, y, _maze, _arr_pt);
-        }
-    }
-    _arr_pt.RemoveAt(_arr_pt.Count - 1);
-    return false;
+    return true;
 }
 
-List<Point> arr_pt = new List<Point>();
-move(0, 0, maze, arr_pt);
+
+void move()
+{
+    int cost = 0;
+    
+    int curr_row = 0;
+    int curr_col = 0;
+    int next_row = 0;
+    int next_col = 0;
+
+    // 9시방향부터 시계반대방향으로 0, 1, 2, 3
+    int[,] dir = new int[2, 4] { { 0, 1, 0, -1 }, { -1, 0, 1, 0 } };
+
+    ConcurrentQueue<Point> queue = new ConcurrentQueue<Point>();
+    queue.Enqueue(new Point(curr_col, curr_row));
+    pathmap[curr_row, curr_col] = 1;
+
+    while (queue.IsEmpty == false)
+    {
+       
+        Point pt;        
+        queue.TryDequeue(out pt);
+        curr_row = pt.Y;
+        curr_col = pt.X;
+
+        if ((curr_row == m - 1) &&
+            (curr_col == n - 1))
+        {
+            cost = pathmap[curr_row, curr_col];
+            if (cost < min_cost)
+            {
+                min_cost = cost;
+            }
+        }
+
+        //Console.WriteLine(" curr_row: {0}, curr_col: {1}", curr_row, curr_col);
+        for (int i = 0; i < 4; i++)
+        {
+            // 진행이 가능한 방향만 Queue에 넣는다.
+            next_row = curr_row + dir[0, i];
+            next_col = curr_col + dir[1, i];
+
+            // 벽으로 막힌길
+            // 갈수 없는 길
+            // 이미 가본 길
+
+            if (is_valid_cell(next_row, next_col) == false) continue;
+            if (maze[next_row, next_col] != 1) continue;
+            if (pathmap[next_row, next_col] != 0) continue;
+
+            pathmap[next_row, next_col] = pathmap[curr_row, curr_col] + 1;
+            queue.Enqueue(new Point(next_col, next_row));
+        }
+    }
+}
+
+move();
 Console.WriteLine(min_cost);
 
 #elif RECURSIVE
@@ -446,32 +451,42 @@ Console.WriteLine("elapsed {0:N0} ms", sw.ElapsedMilliseconds);
 
 #else
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 int min_cost = 1000000;
 
+// m, n은 2이상 100이하
 
-int m = 10;
-int n = 25;
-string str_maze = @"1011101110111011101110111
-1110111011101110111011101
-1011101110111011101110111
-1110111011101110111011101
-1011101110111011101110111
-1110111011101110111011101
-1011101110111011101110111
-1110111011101110111011101
-1011101110111011101110111
-1110111011101110111011101";
+//int m = 10;
+//int n = 25;
+//string str_maze = @"1011101110111011101110111
+//1110111011101110111011101
+//1011101110111011101110111
+//1110111011101110111011101
+//1011101110111011101110111
+//1110111011101110111011101
+//1011101110111011101110111
+//1110111011101110111011101
+//1011101110111011101110111
+//1110111011101110111011101";
+
+int m = 4;
+int n = 6;
+string str_maze = @"101111
+101010
+101011
+111011";
 
 
 string[] lines = str_maze.Split("\n", StringSplitOptions.TrimEntries);
 int[,] maze = new int[m, n];
+int[,] pathmap = new int[m, n];
 
 
+//입력 받기
 for (int row = 0; row < lines.Length; row++)
 {
     string line = lines[row].Trim();
@@ -496,39 +511,6 @@ bool is_valid_cell(int row, int col)
     return true;
 }
 
-for (int row = 0; row < m; row++ )
-{
-    for (int col = 0; col < n; col++)
-    {
-        // 끊긴 길 제거
-        // 최소 주변에 1이 2개 이상 있어야 한다.
-        int one_count = 0;
-
-        {
-            // up cell
-            int row2 = row - 1;
-            if (is_valid_cell(row2, col))
-            {
-                if (maze[row2, col] == 1) one_count++;
-            }
-        }
-        {
-            // down cell
-            int row2 = row + 1;
-            if (is_valid_cell(row2, col))
-            {
-                if (maze[row2, col] == 1) one_count++;
-            }
-        }
-        {
-            // left cell
-
-        }
-
-    }
-}
-
-
 void print_maze(int[,] _maze)
 {
     StringBuilder sb = new StringBuilder();
@@ -552,25 +534,81 @@ void move()
 {
     int cost = 0;
     
-    // 만약 비용이 이미 최소값을 초과한 경우 탐색을 포기한다.
-    if (cost >= min_cost)
+    int curr_row = 0;
+    int curr_col = 0;
+    int next_row = 0;
+    int next_col = 0;
+
+    // 9시방향부터 시계반대방향으로 0, 1, 2, 3
+    int[,] dir = new int[2, 4] { { 0, 1, 0, -1 }, { -1, 0, 1, 0 } };
+
+    ConcurrentQueue<Point> queue = new ConcurrentQueue<Point>();
+    queue.Enqueue(new Point(curr_col, curr_row));
+    pathmap[curr_row, curr_col] = 1;
+
+    while (queue.IsEmpty == false)
     {
-        //Console.WriteLine("탐색포기. 비용쵸과 min_cost:{0}", min_cost);        
-     
+       
+        Point pt;        
+        queue.TryDequeue(out pt);
+        curr_row = pt.Y;
+        curr_col = pt.X;
+
+        if ((curr_row == m - 1) &&
+            (curr_col == n - 1))
+        {
+            //Console.WriteLine("목적지를 찾았다. m:{0}, n:{1}", curr_row, curr_col);
+            //Console.WriteLine("비용 : {0}", pathmap[curr_row, curr_col]);
+
+            cost = pathmap[curr_row, curr_col];
+            if (cost < min_cost)
+            {
+                //Console.WriteLine(" 최소비용 갱신.  {0} -> {1}", min_cost, cost);
+                min_cost = cost;
+            }
+        }
+
+        //Console.WriteLine(" curr_row: {0}, curr_col: {1}", curr_row, curr_col);
+        for (int i = 0; i < 4; i++)
+        {
+            // 진행이 가능한 방향만 Queue에 넣는다.
+            next_row = curr_row + dir[0, i];
+            next_col = curr_col + dir[1, i];
+
+            // 벽으로 막힌길
+            // 갈수 없는 길
+            // 이미 가본 길
+
+            if (is_valid_cell(next_row, next_col) == false) continue;
+            if (maze[next_row, next_col] != 1) continue;
+            if (pathmap[next_row, next_col] != 0) continue;
+
+            //Console.WriteLine("  i:{0}, next_row:{1}, next_col:{2}", i, next_row, next_col);
+
+
+            pathmap[next_row, next_col] = pathmap[curr_row, curr_col] + 1;
+            queue.Enqueue(new Point(next_col, next_row));
+
+        }
+
+        //print_maze(pathmap);
     }
 
-    int row = 0;
-    int col = 0;
+    // (0,0)에서부터 시작한다.
+    // 4가지 방향에 대해서 탐색을 시작한다.
+    // 이전에 왔던 길로는 가는 않는다.
 
+    // 목적지에 도착한 경우 비용을 기억해둔다. 
+    // 새로운 길 탐색중 이미 이전 도착 비용을 초과한 경우 더이상의 탐색을 포기한다.
 
-
+  
+    
 }
 
 
 print_maze(maze);
 
 Stopwatch sw = Stopwatch.StartNew();
-Console.WriteLine("begin");
 Stack<Point> arr_pt = new Stack<Point>();
 
 move();
