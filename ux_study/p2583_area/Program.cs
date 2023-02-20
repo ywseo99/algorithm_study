@@ -1,4 +1,4 @@
-﻿//#define SOLVE 
+﻿#define SOLVE 
 
 /*
 문제
@@ -41,7 +41,6 @@ K개의 직사각형 내부를 제외한 나머지 부분이 몇 개의 분리�
 
 using System.Collections.Concurrent;
 using System.Drawing;
-using System.Text;
 
 string input = Console.ReadLine();
 string[] mn = input.Split(" ", StringSplitOptions.TrimEntries);
@@ -51,6 +50,9 @@ int k = int.Parse(mn[2]);
 
 int[,] maze = new int[m, n];
 int[,] pathmap = new int[m, n];
+
+List<int> areas = new List<int>();
+ConcurrentQueue<Point> queue = new ConcurrentQueue<Point>();
 
 //입력 받기
 for (int row = 0; row < k; row++)
@@ -73,18 +75,16 @@ for (int row = 0; row < k; row++)
     }
 }
 
-
 bool is_valid_cell(int row, int col)
 {
     if (row < 0 || row >= maze.GetLength(0))
         return false;
     if (col < 0 || col >= maze.GetLength(1))
         return false;
-
     return true;
 }
 
-List<int> areas = new List<int>();
+
 void move()
 {
     int curr_row = 0;
@@ -92,17 +92,14 @@ void move()
     int next_row = 0;
     int next_col = 0;
 
-    // 9시방향부터 시계반대방향으로 0, 1, 2, 3
     int[,] dir = new int[2, 4] { { 0, 1, 0, -1 }, { -1, 0, 1, 0 } };
-
-    ConcurrentQueue<Point> queue = new ConcurrentQueue<Point>();
+    
     queue.Enqueue(new Point(curr_col, curr_row));
 
     int area = 0;
     bool enable_loop = true;
     while (enable_loop)
     {
-        // 큐가 비어있다면 비어있는 셀을 찾아 처음부터 다시 시작한다.
         if (queue.IsEmpty == true)
         {
             if (area != 0)
@@ -111,32 +108,36 @@ void move()
                 area = 0;
             }
 
-            // 비어있는 셀을 찾아본다
+            bool found_empty_cell = false;
             for (int row = 0; row < pathmap.GetLength(0); row++)
             {
+                if (found_empty_cell == true)
+                    break;
+
                 for (int col = 0; col < pathmap.GetLength(1); col++)
                 {
+                    if (found_empty_cell == true)
+                        break;
+
                     if (pathmap[row, col] != 0)
                     {
                         continue;
                     }
+
                     curr_row = row;
                     curr_col = col;
-
                     queue.Enqueue(new Point(curr_col, curr_row));
                     pathmap[curr_row, curr_col] = 1;
 
-                    goto MOVE_CONTINUE;
+                    found_empty_cell = true;
                 }
             }
 
-            // 비어있는 셀을 찾지 못했다면
-            enable_loop = false;
-            continue;
+            if (found_empty_cell == false) {
+                enable_loop = false;
+                continue;
+            }
         }
-
-    MOVE_CONTINUE:
-
 
         Point pt;
         queue.TryDequeue(out pt);
@@ -145,7 +146,6 @@ void move()
 
         for (int i = 0; i < 4; i++)
         {
-            // 진행이 가능한 방향만 Queue에 넣는다.
             next_row = curr_row + dir[0, i];
             next_col = curr_col + dir[1, i];
 
@@ -160,8 +160,9 @@ void move()
     }
 }
 move();
-Console.WriteLine("{0}", areas.Count);
-Console.WriteLine("{0}", string.Join(" ", areas.OrderBy(i => i).ToList()));
+int[] arr = areas.ToArray();
+Array.Sort(arr);
+Console.WriteLine("{0} \n{1}", areas.Count, string.Join(" ", arr));
 
 #else 
 
@@ -171,33 +172,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 
-//int m = 5;  // 행의 수
-//int n = 7;  // 열의 수
-//int k = 3;  // 그려지는 사각형의 수
-
-//string str_input = @"0 2 4 4
-//1 1 2 5
-//4 0 6 2";
-
-
-int m = 5;  // 행의 수
-int n = 5;  // 열의 수
-int k = 5;  // 그려지는 사각형의 수
-
-string str_input = @"0 0 2 2
-3 3 5 5
-0 4 1 5
-1 1 4 4
-4 0 5 1";
-
-// 예상되는 답
-//4
-//2 2 2 2
-
-string[] lines = str_input.Split("\n", StringSplitOptions.TrimEntries);
-int[,] maze = new int[m, n];
-int[,] pathmap = new int[m, n];
-
 
 
 void print_maze(int[,] _maze)
@@ -206,17 +180,73 @@ void print_maze(int[,] _maze)
     int _m = _maze.GetLength(0);
     int _n = _maze.GetLength(1);
 
-    sb.AppendFormat(" m: {0}, n: {1} \n", _m, _n);
+    sb.AppendFormat("row:{0}, col:{1} \n", _m, _n);
     for (int row = 0; row < _m; row++)
     {
         for (int col = 0; col < _n; col++)
         {
-            sb.AppendFormat("{0,2:x} ", _maze[row, col]);
+            if (_maze[row, col] == 0)
+                sb.AppendFormat("_ ");
+            else 
+                sb.AppendFormat("{0:x} ", _maze[row, col]);
         }
         sb.AppendFormat("\n");
     }
     Console.WriteLine(sb.ToString());
 }
+
+//int m = 5;  // 행의 수
+//int n = 7;  // 열의 수
+//int k = 3;  // 그려지는 사각형의 수
+
+//string str_input = @"0 2 4 4
+//1 1 2 5
+//4 0 6 2";
+
+//int m = 5;  // 행의 수
+//int n = 5;  // 열의 수
+//int k = 3;  // 그려지는 사각형의 수
+
+//string str_input = @"1 1 2 2
+//3 2 4 3
+//2 3 3 4";
+
+
+//int m = 5;
+//int n = 5;
+//int k = 1;
+//string str_input = @"1 0 2 5";
+
+//int m = 4;
+//int n = 4;
+//int k = 1;
+//string str_input = @"0 0 1 1";
+//정답 15
+
+int m = 100;
+int n = 100;
+int k = 1;
+
+string str_input = @"0 0 1 1";
+
+
+//int m = 5;  // 행의 수
+//int n = 5;  // 열의 수
+//int k = 5;  // 그려지는 사각형의 수
+
+//string str_input = @"0 0 2 2
+//3 3 5 5
+//0 4 1 5
+//1 1 4 4
+//4 0 5 1";
+
+// 예상되는 답
+//4
+//2 2 2 2
+
+string[] lines = str_input.Split("\n", StringSplitOptions.TrimEntries);
+int[,] maze = new int[m, n];
+int[,] pathmap = new int[m, n];
 
 
 //입력 받기
@@ -287,9 +317,9 @@ void move()
             }
 
             // 비어있는 셀을 찾아본다
-            for (int row = 0; row < pathmap.GetLength(0); row++)
+            for (int row = 0; row < m; row++)
             {
-                for (int col = 0; col < pathmap.GetLength(1); col++)
+                for (int col = 0; col < n; col++)
                 {
                     if (pathmap[row, col] != 0)
                     {
@@ -318,22 +348,17 @@ void move()
         curr_row = pt.Y;
         curr_col = pt.X;
 
-        Console.WriteLine(" curr_row: {0}, curr_col: {1}", curr_row, curr_col);
+        Console.WriteLine(" curr ({0},{1})", curr_row, curr_col);
         for (int i = 0; i < 4; i++)
         {
             // 진행이 가능한 방향만 Queue에 넣는다.
             next_row = curr_row + dir[0, i];
             next_col = curr_col + dir[1, i];
 
-            // 벽으로 막힌길
-            // 갈수 없는 길
-            // 이미 가본 길
-
             if (is_valid_cell(next_row, next_col) == false) continue;
             if (maze[next_row, next_col] != 0) continue;
             if (pathmap[next_row, next_col] != 0) continue;
-
-            Console.WriteLine("  i:{0}, next_row:{1}, next_col:{2}", i, next_row, next_col);
+            Console.WriteLine("\t i:{0}, next ({1},{2})", i, next_row, next_col);
 
             area += 1;
             pathmap[next_row, next_col] = pathmap[curr_row, curr_col] + 1;
@@ -346,11 +371,10 @@ void move()
 
 Stopwatch sw = Stopwatch.StartNew();
 move();
-
 sw.Stop();
-Console.WriteLine(" elapsed {0:N0} ms", sw.ElapsedMilliseconds);
-
-Console.WriteLine(" block count: {0}", areas.Count);
-Console.WriteLine(" area : {0}", string.Join(" ", areas.OrderBy(i => i).ToList()));
+Console.WriteLine(" ------- result -------");
+Console.WriteLine(" elapsed     : {0:N0} ms", sw.ElapsedMilliseconds);
+Console.WriteLine(" block count : {0}", areas.Count);
+Console.WriteLine(" area        : {0}", string.Join(" ", areas.OrderBy(i => i).ToList()));
 
 #endif
