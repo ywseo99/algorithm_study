@@ -48,7 +48,7 @@ int m = int.Parse(mn[0]);
 int n = int.Parse(mn[1]);
 int k = int.Parse(mn[2]);
 
-int[,] maze = new int[m, n];
+byte[,] maze = new byte[m, n];
 int[,] pathmap = new int[m, n];
 
 List<int> areas = new List<int>();
@@ -65,25 +65,14 @@ for (int row = 0; row < k; row++)
     int x2 = int.Parse(words[2]);
     int y2 = int.Parse(words[3]);
 
-    // 사각형이 포함하는 영역 칠하기
     for (int r = y1; r < y2; r++)
     {
         for (int c = x1; c < x2; c++)
         {
-            maze[r, c] += 1;
+            maze[r, c] = 1;
         }
     }
 }
-
-bool is_valid_cell(int row, int col)
-{
-    if (row < 0 || row >= maze.GetLength(0))
-        return false;
-    if (col < 0 || col >= maze.GetLength(1))
-        return false;
-    return true;
-}
-
 
 void move()
 {
@@ -91,11 +80,10 @@ void move()
     int curr_col = 0;
     int next_row = 0;
     int next_col = 0;
-
     int[,] dir = new int[2, 4] { { 0, 1, 0, -1 }, { -1, 0, 1, 0 } };
-    
     queue.Enqueue(new Point(curr_col, curr_row));
 
+    Point pt;
     int area = 0;
     bool enable_loop = true;
     while (enable_loop)
@@ -107,40 +95,28 @@ void move()
                 areas.Add(area);
                 area = 0;
             }
-
-            bool found_empty_cell = false;
-            for (int row = 0; row < pathmap.GetLength(0); row++)
+            for (int row = 0; row < m; row++)
             {
-                if (found_empty_cell == true)
-                    break;
-
-                for (int col = 0; col < pathmap.GetLength(1); col++)
+                for (int col = 0; col < n; col++)
                 {
-                    if (found_empty_cell == true)
-                        break;
-
                     if (pathmap[row, col] != 0)
-                    {
                         continue;
-                    }
-
+                    
                     curr_row = row;
                     curr_col = col;
+
                     queue.Enqueue(new Point(curr_col, curr_row));
                     pathmap[curr_row, curr_col] = 1;
-
-                    found_empty_cell = true;
+                    goto MOVE_CONTINUE;
                 }
             }
-
-            if (found_empty_cell == false) {
-                enable_loop = false;
-                continue;
-            }
+            enable_loop = false;
+            continue;
         }
 
-        Point pt;
-        queue.TryDequeue(out pt);
+    MOVE_CONTINUE:
+        
+        queue.TryDequeue(out pt);        
         curr_row = pt.Y;
         curr_col = pt.X;
 
@@ -149,7 +125,9 @@ void move()
             next_row = curr_row + dir[0, i];
             next_col = curr_col + dir[1, i];
 
-            if (is_valid_cell(next_row, next_col) == false) continue;
+
+            if (next_row < 0 || next_row >= m) continue;
+            if (next_col < 0 || next_col >= n) continue;
             if (maze[next_row, next_col] != 0) continue;
             if (pathmap[next_row, next_col] != 0) continue;
             
@@ -160,9 +138,12 @@ void move()
     }
 }
 move();
-int[] arr = areas.ToArray();
-Array.Sort(arr);
-Console.WriteLine("{0} \n{1}", areas.Count, string.Join(" ", arr));
+Console.WriteLine("{0}", areas.Count);
+areas.Sort();
+Console.WriteLine("{0}", string.Join(' ', areas));
+
+
+//Console.WriteLine("{0} \n{1}", areas.Count, string.Join(" ", arr));
 
 #else 
 
