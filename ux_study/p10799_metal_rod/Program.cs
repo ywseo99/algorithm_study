@@ -57,6 +57,8 @@ int depth = 0;
 int laser_count = 0;
 int chunk_count = 0;
 
+
+bool prev_laser_found = false;
 for (int i = 0; i < input.Length; i++)
 {
     Console.WriteLine(" {0}", input[i]);
@@ -80,11 +82,22 @@ for (int i = 0; i < input.Length; i++)
             }
             else if (prev_ch == ')')
             {
-                Console.WriteLine("\t <--- new metal body begin (depth:{0})", depth);
+                if (prev_laser_found == true)
+                {
+                    Console.WriteLine("\t prev is laser");
+                }
+                else
+                {
+                    Console.WriteLine("\t <--- new metal body begin (depth:{0})", depth);
+                    Console.WriteLine("\t laser_count clear");
+                    laser_count = 0;
+                }
+                
             }
+            prev_laser_found = false;
         }
         stack.Push(ch);
-        Console.WriteLine("\t push '{0}' stack_size:{1}", ch, stack.Count);
+        //Console.WriteLine("\t push '{0}' stack_size:{1}", ch, stack.Count);
     }
     else if (ch == ')')
     {
@@ -102,14 +115,19 @@ for (int i = 0; i < input.Length; i++)
                 {
                     Console.WriteLine("\t laser found. but no metal...");
                 }
+                prev_laser_found = true;
             }
             else if (prev_ch == ')')
             {
              
                 Console.WriteLine("\t --- Metal body end (depth:{0}) --->", depth);
                 Console.WriteLine("\t metal rod split. by laser_cnt: {0}, depth: {1}", laser_count, depth);
+                Console.WriteLine("\t depth * (laser + 1) = {0}", depth * (laser_count + 1));
+                chunk_count += (depth * (laser_count + 1));
                 depth--;
                 Console.WriteLine("\t decrease depth to :{0}", depth);
+                prev_laser_found = false;
+                
             }
         }
         stack.Push(ch);
@@ -118,3 +136,4 @@ for (int i = 0; i < input.Length; i++)
     }
 }
 Console.WriteLine("total laser count : {0}", laser_count);
+Console.WriteLine("chunk count : {0}", chunk_count);
