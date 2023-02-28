@@ -15,9 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p2605", "p2605\p2605.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p2178_maze", "p2178_maze\p2178_maze.csproj", "{6771BAF2-5C5E-437C-8958-C7672285A719}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p3184_sheep", "p3184_sheep\p3184_sheep.csproj", "{919D4CCE-94B1-4317-8470-B63DBEE52B94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p3184_sheep", "p3184_sheep\p3184_sheep.csproj", "{919D4CCE-94B1-4317-8470-B63DBEE52B94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p2583_area", "p2583_area\p2583_area.csproj", "{CD955434-5B13-47AA-93C7-E959301AA87C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p2583_area", "p2583_area\p2583_area.csproj", "{CD955434-5B13-47AA-93C7-E959301AA87C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p10799_metal_rod", "p10799_metal_rod\p10799_metal_rod.csproj", "{6155FDED-D524-4635-81F6-ACEA65C91AF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{CD955434-5B13-47AA-93C7-E959301AA87C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD955434-5B13-47AA-93C7-E959301AA87C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD955434-5B13-47AA-93C7-E959301AA87C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
