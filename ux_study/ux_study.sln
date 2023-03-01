@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p3184_sheep", "p3184_sheep\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p2583_area", "p2583_area\p2583_area.csproj", "{CD955434-5B13-47AA-93C7-E959301AA87C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p10799_metal_rod", "p10799_metal_rod\p10799_metal_rod.csproj", "{6155FDED-D524-4635-81F6-ACEA65C91AF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p10799_metal_rod", "p10799_metal_rod\p10799_metal_rod.csproj", "{6155FDED-D524-4635-81F6-ACEA65C91AF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p13302_resort", "p13302_resord\p13302_resort.csproj", "{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6155FDED-D524-4635-81F6-ACEA65C91AF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
