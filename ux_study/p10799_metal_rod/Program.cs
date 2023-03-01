@@ -1,4 +1,6 @@
-﻿
+﻿//#define SOLVE
+
+
 
 /*
 문제
@@ -47,93 +49,81 @@
 
 */
 
-//string input = Console.ReadLine();
-string input = "()(((()())(())()))(())";
-Console.WriteLine(input);
 
-Stack<char> stack = new Stack<char>();
+#if SOLVE 
 
+string input = Console.ReadLine();
+string converted = input.Replace("()", "*");
 int depth = 0;
-int laser_count = 0;
 int chunk_count = 0;
-
-
-bool prev_laser_found = false;
-for (int i = 0; i < input.Length; i++)
+int[] arr_laser = new int[100000];
+for (int i = 0; i < converted.Length; i++)
 {
-    Console.WriteLine(" {0}", input[i]);
-
-    // 경우의 수
-    // ((
-    // )(
-    // ()
-    // ))
-    
-    char ch = input[i];
+    char ch = converted[i];
     if (ch == '(')
     {
-        if (stack.Count > 0)
-        {
-            char prev_ch = stack.Peek();
-            if (prev_ch == '(')
-            {
-                depth++;
-                Console.WriteLine("\t <--- Metal body begin (depth:{0})", depth);
-            }
-            else if (prev_ch == ')')
-            {
-                if (prev_laser_found == true)
-                {
-                    Console.WriteLine("\t prev is laser");
-                }
-                else
-                {
-                    Console.WriteLine("\t <--- new metal body begin (depth:{0})", depth);
-                    Console.WriteLine("\t laser_count clear");
-                    laser_count = 0;
-                }
-                
-            }
-            prev_laser_found = false;
-        }
-        stack.Push(ch);
-        //Console.WriteLine("\t push '{0}' stack_size:{1}", ch, stack.Count);
+        depth++;
     }
     else if (ch == ')')
     {
-        if (stack.Count > 0)
+        int chunk = (depth * arr_laser[depth] + 1);
+        chunk_count += chunk;
+        arr_laser[depth] = 0;
+        depth--;
+    }
+    else if (ch == '*')
+    {
+        if (depth > 0)
         {
-            char prev_ch = stack.Peek();
-            if (prev_ch == '(')
-            {
-                if (depth > 0)
-                {
-                    laser_count++;
-                    Console.WriteLine("\t\t ================= Laser found. cnt: {0}", laser_count);
-                }
-                else
-                {
-                    Console.WriteLine("\t laser found. but no metal...");
-                }
-                prev_laser_found = true;
-            }
-            else if (prev_ch == ')')
-            {
-             
-                Console.WriteLine("\t --- Metal body end (depth:{0}) --->", depth);
-                Console.WriteLine("\t metal rod split. by laser_cnt: {0}, depth: {1}", laser_count, depth);
-                Console.WriteLine("\t depth * (laser + 1) = {0}", depth * (laser_count + 1));
-                chunk_count += (depth * (laser_count + 1));
-                depth--;
-                Console.WriteLine("\t decrease depth to :{0}", depth);
-                prev_laser_found = false;
-                
-            }
+            arr_laser[depth]++;
         }
-        stack.Push(ch);
-        ////char pop_ch = stack.Pop();
-        //Console.WriteLine("\t pop '{0}' stack_size:{1}", pop_ch, stack.Count);
     }
 }
-Console.WriteLine("total laser count : {0}", laser_count);
-Console.WriteLine("chunk count : {0}", chunk_count);
+Console.WriteLine("{0}", chunk_count);
+
+#else
+
+//string input = Console.ReadLine();
+using System.Text;
+
+string input = "()(((()())(())()))(())";
+//input = "(((()(()()))(())()))(()())";
+
+int depth = 0;
+int chunk_count = 0;
+
+string converted = input.Replace("()", "*");
+Console.WriteLine(input);
+Console.WriteLine(converted);
+
+int[] arr_laser = new int[100000];
+for (int i = 0; i < converted.Length; i++)
+{
+    char ch = converted[i];
+    Console.Write("{0}  : ", ch);
+    if (ch == '(')
+    {
+        Console.WriteLine("ROD BEGIN");
+        depth++;
+    }
+    else if (ch == ')')
+    {
+        int chunk = (depth * arr_laser[depth] + 1);
+        Console.WriteLine("ROD END.  depth:{0}, laser:{1}, chunk:{2}", depth, arr_laser[depth], chunk);
+        chunk_count += chunk;
+        arr_laser[depth] = 0;
+        depth--;
+    }
+    else if (ch == '*')
+    {
+        Console.WriteLine("LASER");
+        if (depth > 0)
+        {
+            arr_laser[depth]++;
+        }
+    }
+}
+
+Console.WriteLine("{0}", chunk_count);
+
+#endif
