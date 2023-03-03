@@ -1,6 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
-
 /*
     https://www.acmicpc.net/problem/1193
 
@@ -77,3 +75,39 @@ X가 주어졌을 때, X번째 분수를 구하는 프로그램을 작성하시�
 2/4
 
 */
+
+
+string input = Console.ReadLine();
+int x = 0;
+int.TryParse(input, out x);
+int n = 0;
+int index = 0;  // 진행한 분수 개수 
+string answer = string.Empty;
+while (true)
+{
+    n++;
+    bool is_ne = (n % 2 == 1);  // 짝수라면 남서방향(SW). 홀수라면 북동방향(NE)
+    for (int i = 0; i < n; i++)
+    {
+        int row = 0;
+        int col = 0;
+        if (is_ne)
+        {
+            row = n - i;
+            col = 1 + i;
+        }
+        else
+        {
+            row = 1 + i;
+            col = n - i;
+        }
+        index++;
+        if (index == x)
+        {
+            answer = string.Format("{0}/{1}", row, col);
+            goto END_OF_SOLVE;   
+        }
+    }
+}
+END_OF_SOLVE:
+Console.WriteLine(answer);
