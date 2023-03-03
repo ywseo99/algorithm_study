@@ -1,4 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿#define SOLVE
 
 
 /*
@@ -6,23 +6,197 @@ https://www.acmicpc.net/problem/10158
 */
 
 
+#if SOLVE
+
+using System.Drawing;
+
+const int NW = 0;   // 북서
+const int NE = 1;   // 남서
+const int SW = 2;   // 북동
+const int SE = 3;   // 남동
+
+
+string input = Console.ReadLine();
+string[] words = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+int WIDTH = int.Parse(words[0]);
+int HEIGHT = int.Parse(words[1]);
+
+input = Console.ReadLine();
+words = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+int p = int.Parse(words[0]);
+int q = int.Parse(words[1]);
+
+input = Console.ReadLine();
+int t = int.Parse(input);
+
+
+Point pt = new Point(p, q);
+int dir = NE;
+int routine_cnt = 0;
+
+
+int move = 0;
+int d = 1;
+
+Point ne_pt = new Point(0, 0);
+int ne_dir = -1;
+int ne_move_first = 0;
+
+int dx = 0;
+int dy = 0;
+
+
+while (move < t)
+{
+    d = 0;  // 이동해야 할 거리
+    switch (dir)
+    {
+        case NE:    
+            {
+                dx = WIDTH - pt.X;
+                dy = HEIGHT - pt.Y;
+
+                d = dx;
+                if (d > dy) d = dy;
+
+                if ((move + d) < t)
+                {
+                    if (ne_dir < 0)
+                    {
+                        ne_dir = NE;
+                        ne_pt = pt;
+                        ne_move_first = move;
+                    }
+                    else
+                    {
+                        if (ne_pt.X == pt.X &&
+                            ne_pt.Y == pt.Y)
+                        {
+                            routine_cnt = (move - ne_move_first);
+                            //int skip_cnt = (int)((t - move) / routine_cnt);
+                            int remain = (t - move) % routine_cnt;
+                            move += (t - move - remain);
+                            //move += (skip_cnt * routine_cnt);
+                        }
+                    }
+                }
+                else
+                {
+                    d = (t - move);
+                }
+                pt.X += d;
+                pt.Y += d;
+            }
+            break;
+        case SE:
+            {
+                dx = WIDTH - pt.X;
+                dy = pt.Y;
+
+                d = dx;
+                if (d > dy) d = dy;
+
+
+                if ((move + d) >= t)
+                {
+                    d = (t - move);
+                }
+                pt.X += d;
+                pt.Y -= d;
+            }
+            break;
+        case SW:
+            {
+                dx = pt.X;
+                dy = pt.Y;
+
+                d = dx;
+                if (d > dy) d = dy;
+
+
+                if ((move + d) >= t)
+                {
+                    d = (t - move);
+                }
+
+                pt.X -= d;
+                pt.Y -= d;
+            }
+            break;
+        case NW:
+            {
+                dx = pt.X;
+                dy = HEIGHT - pt.Y;
+
+                d = dx;
+                if (d > dy) d = dy;
+
+
+                if ((move + d) >= t)
+                {
+                    d = (t - move);
+                }
+
+                pt.X -= d;
+                pt.Y += d;
+            }
+            break;
+    }
+
+    move += d;
+
+    int next_dir = dir;
+    if (pt.X == 0)
+    {
+        if (pt.Y == 0) next_dir = NE;
+        else if (pt.Y == HEIGHT) next_dir = SE;
+        else
+        {
+            if (dir == NW) next_dir = NE;
+            if (dir == SW) next_dir = SE;
+        }
+    }
+    else if (pt.X == WIDTH)
+    {
+        if (pt.Y == 0) next_dir = NW;
+        else if (pt.Y == HEIGHT) next_dir = SW;
+        else
+        {
+            if (dir == NE) next_dir = NW;
+            if (dir == SE) next_dir = SW;
+        }
+    }
+    else
+    {
+        if (pt.Y == 0)
+        {
+            if (dir == SW) next_dir = NW;
+            if (dir == SE) next_dir = NE;
+        }
+        else if (pt.Y == HEIGHT)
+        {
+            if (dir == NW) next_dir = SW;
+            if (dir == NE) next_dir = SE;
+        }
+    }
+
+    dir = next_dir;
+
+}
+
+Console.WriteLine("{0} {1}", pt.X, pt.Y);
+
+#else
 
 using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 
-
-
 int w = 0;  // 너비 2~40,000
 int h = 0;
-
 int p = 0;
 int q = 0;
-
 int t = 0;
-
-
-//Console.WriteLine("10158 개미");
 
 string input = Console.ReadLine();
 string[] words = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
@@ -44,277 +218,298 @@ const int NE = 1;   // 남서
 const int SW = 2;   // 북동
 const int SE = 3;   // 남동
 
-
 Rectangle bounds = new Rectangle(0, 0, w, h);
 Point pt = new Point(p, q);
-Point pt_first = new Point(p, q);
-
 int dir = NE;
-int dir_first = dir;
 
-Stopwatch sw = Stopwatch.StartNew();
-bool is_repeat = false;
-
-int move_cnt_to_final = t;  // 반복 개수 확인 후, 순간이동 후에 추가 이동할 개수
 int routine_cnt = 0;
 
 
-
+//string DirToString(int dir)
+//{
+//    StringBuilder sb = new StringBuilder();
+//    switch (dir)
+//    {
+//        case NW: sb.AppendFormat(" NW ↖"); break;
+//        case NE: sb.AppendFormat(" NE ↗"); break;
+//        case SW: sb.AppendFormat(" SW ↙"); break;
+//        case SE: sb.AppendFormat(" SE ↘"); break;
+//    }
+//    return sb.ToString();
+//}
 
 
 int GetDir(Point curr_pos, int dir)
 {
-    // 현재 위치에서 경계 확인. 모두 12가지 경우의 수에 따라 진행 방향을 바꿔준다.
+    // 현재 위치에서 경계 확인. 모두 12가지 경우의 수에 따라 진행 방향을 바꿔준다.    
+    //int next_dir = dir;
+    //if (pt.X == 0 &&
+    //    (pt.Y > 0 && pt.Y < bounds.Height))
+    //{
+    //    if (dir == NW) next_dir = NE;
+    //    if (dir == SW) next_dir = SE;
+    //    return next_dir;
+    //}
+
+    //if (pt.X == bounds.Width &&
+    //    (pt.Y > 0 && pt.Y < bounds.Height))
+    //{
+    //    if (dir == NE) next_dir = NW;
+    //    if (dir == SE) next_dir = SW;
+    //    return next_dir;
+    //}
+
+    //if ((pt.X > 0 && pt.X < bounds.Width) &&
+    //     pt.Y == 0)
+    //{
+    //    if (dir == SW) next_dir = NW;
+    //    if (dir == SE) next_dir = NE;
+    //    return next_dir;
+
+    //}
+
+    //if ((pt.X > 0 && pt.X < bounds.Width) &&
+    //     pt.Y == bounds.Height)
+    //{
+    //    if (dir == NW) next_dir = SW;
+    //    if (dir == NE) next_dir = SE;
+    //    return next_dir;
+
+    //}
+
+    //if (pt.X == 0 && pt.Y == 0)
+    //{
+    //    next_dir = NE;
+    //    return next_dir;
+    //}
+    //if (pt.X == 0 && pt.Y == bounds.Height)
+    //{
+    //    next_dir = SE;
+    //    return next_dir;
+    //}
+    //if (pt.X == bounds.Width && pt.Y == 0)
+    //{
+    //    next_dir = NW;
+    //    return next_dir;
+    //}
+
+    //if (pt.X == bounds.Width && pt.Y == bounds.Height)
+    //    next_dir = SW;
+
+
     int next_dir = dir;
-    if (pt.X == 0 &&
-        (pt.Y > 0 && pt.Y < bounds.Height))
+    if (pt.X == 0)
     {
-        if (dir == NW) next_dir = NE;
-        if (dir == SW) next_dir = SE;
+        if (pt.Y == 0) next_dir = NE;
+        else if (pt.Y == bounds.Height) next_dir = SE;
+        else
+        {
+            if (dir == NW) next_dir = NE;
+            if (dir == SW) next_dir = SE;
+        }
     }
-
-    if (pt.X == bounds.Width &&
-        (pt.Y > 0 && pt.Y < bounds.Height))
+    else if (pt.X == bounds.Width)
     {
-        if (dir == NE) next_dir = NW;
-        if (dir == SE) next_dir = SW;
-
+        if (pt.Y == 0) next_dir = NW;
+        else if (pt.Y == bounds.Height) next_dir = SW;
+        else
+        {
+            if (dir == NE) next_dir = NW;
+            if (dir == SE) next_dir = SW;
+        }
     }
-
-    if ((pt.X > 0 && pt.X < bounds.Width) &&
-         pt.Y == 0)
+    else
     {
-        if (dir == SW) next_dir = NW;
-        if (dir == SE) next_dir = NE;
+        if (pt.Y == 0)
+        {
+            if (dir == SW) next_dir = NW;
+            if (dir == SE) next_dir = NE;
+        }
+        else if (pt.Y == bounds.Height)
+        {
+            if (dir == NW) next_dir = SW;
+            if (dir == NE) next_dir = SE;
+        }
     }
-
-    if ((pt.X > 0 && pt.X < bounds.Width) &&
-         pt.Y == bounds.Height)
-    {
-        if (dir == NW) next_dir = SW;
-        if (dir == NE) next_dir = SE;
-    }
-
-    if (pt.X == 0 && pt.Y == 0) next_dir = NE;
-    if (pt.X == 0 && pt.Y == bounds.Height) next_dir = SE;
-    if (pt.X == bounds.Width && pt.Y == 0) next_dir = NW;
-    if (pt.X == bounds.Width && pt.Y == bounds.Height) next_dir = SW;
     return next_dir;
 }
-
-
 
 int move = 0;
 int d = 1;
 
-while (move < t)
+
+//Console.WriteLine("init_pos {0}  이동거리:{1,3},  방향:{2}", pt, move, DirToString(dir));
+//Console.WriteLine("---- begin ----\n");
+
+Point ne_pt = new Point(0, 0);
+int ne_dir = -1;
+int ne_move_first = 0;
+
+
+//Stopwatch sw = Stopwatch.StartNew();
+
+
+while (true)
 {
-    // 현재위치와 그 위치에서의 방향 표시
-    //Console.WriteLine(" pos ({0},{1})   dir:{2}   move:{3}", pt.X, pt.Y, dir, move);
-    StringBuilder sb = new StringBuilder();
-    sb.AppendFormat("curr_pos {1},{2}  move_sum:{3},  ", move, pt.X, pt.Y, move);
+    d = 0;  // 이동해야 할 거리
     switch (dir)
     {
-        case NW: sb.AppendFormat("NW"); break;
-        case NE: sb.AppendFormat("NE"); break;
-        case SW: sb.AppendFormat("SW"); break;
-        case SE: sb.AppendFormat("SE"); break;
-    }
-    Console.WriteLine(sb.ToString());
-
-
-    // 벽에 다을 때까지 빠르게 이동
-    Point next_pt = new Point(pt.X, pt.Y);
-    switch (dir)
-    {
-        case NE:
+        case NE:    // 초기 시작이 NE이므로 첫번째 벽은 반드시 여기서 만난다.
             // x, y 중 어떤부분지 먼저 닿는지 본다. 
             {
                 int dx = bounds.Width - pt.X;
                 int dy = bounds.Height - pt.Y;
-                d = Math.Min(dx, dy);
 
-                next_pt.X += d;
-                next_pt.Y += d;
-                Console.WriteLine("\t NE move {0}", d);
+                d = dx;
+                if (d > dy) d = dy;
+
+                if ((move + d) < t)
+                {
+                    // 남은 거리가 충분하다
+                    // 미킹해놓고, 다음에 동일하게 온다면 거리단축하기
+                    if (ne_dir < 0)
+                    {
+                        ne_dir = NE;
+                        //ne_pt = new Point(pt.X, pt.Y);
+                        ne_pt = pt;
+
+                        //Console.WriteLine(" 첫번째 북동벽 기억해두기 {0,8}", ne_pt);
+                        ne_move_first = move;
+                    }
+                    else
+                    {
+                        if (ne_pt.X == pt.X &&
+                            ne_pt.Y == pt.Y)
+                        {
+                            routine_cnt = (move - ne_move_first);
+                            //Console.WriteLine("  다시 북동벽 만남. {0} 이동마다 반복됨. ", routine_cnt);
+
+                            int skip_cnt = (int)((t - move) / routine_cnt);
+
+                            //int prev_move = move;
+                            move += (skip_cnt * routine_cnt);
+                            //Console.WriteLine("    순간이동 : {0} -> {1}", prev_move, move);
+
+                        }
+                    }
+
+                }
+                else
+                {
+                    d = (t - move);
+                }
+                pt.X += d;
+                pt.Y += d;
             }
             break;
         case SE:
             {
                 int dx = bounds.Width - pt.X;
                 int dy = pt.Y;
-                d = Math.Min(dx, dy);
 
-                next_pt.X += d;
-                next_pt.Y -= d;
-                Console.WriteLine("\t SE move {0}", d);
+                d = dx;
+                if (d > dy) d = dy;
+
+
+                if ((move + d) >= t)
+                {
+                    d = (t - move);
+                }
+                pt.X += d;
+                pt.Y -= d;
             }
             break;
         case SW:
             {
                 int dx = pt.X;
                 int dy = pt.Y;
-                d = Math.Min(dx, dy);
+                
+                d = dx;
+                if (d > dy) d = dy;
 
-                next_pt.X -= d;
-                next_pt.Y -= d;
-                Console.WriteLine("\t SW move {0}", d);
+
+                if ((move + d) >= t)
+                {
+                    d = (t - move);
+                }
+
+                pt.X -= d;
+                pt.Y -= d;
             }
             break;
         case NW:
             {
                 int dx = pt.X;
                 int dy = bounds.Height - pt.Y;
-                d = Math.Min(dx, dy);
 
-                next_pt.X -= d;
-                next_pt.Y += d;
-                Console.WriteLine("\t NW move {0}", d);
+                d = dx;
+                if (d > dy) d = dy;
+
+
+                if ((move + d) >= t)
+                {
+                    d = (t - move);
+                }
+
+                pt.X -= d;
+                pt.Y += d;
             }
             break;
     }
 
     move += d;
+    //int next_dir = GetDir(pt, dir);
 
-    pt = next_pt;
-
-    // 이동한 위치에서의 방향 다시 찾기
-    int next_dir = GetDir(pt, dir);
-    //if (dir == next_dir)
-    //{
-    //    Console.WriteLine("아직 벽에 닿지 않았다. ");
-    //}
-
+    int next_dir = dir;
+    if (pt.X == 0)
+    {
+        if (pt.Y == 0) next_dir = NE;
+        else if (pt.Y == bounds.Height) next_dir = SE;
+        else
+        {
+            if (dir == NW) next_dir = NE;
+            if (dir == SW) next_dir = SE;
+        }
+    }
+    else if (pt.X == bounds.Width)
+    {
+        if (pt.Y == 0) next_dir = NW;
+        else if (pt.Y == bounds.Height) next_dir = SW;
+        else
+        {
+            if (dir == NE) next_dir = NW;
+            if (dir == SE) next_dir = SW;
+        }
+    }
+    else
+    {
+        if (pt.Y == 0)
+        {
+            if (dir == SW) next_dir = NW;
+            if (dir == SE) next_dir = NE;
+        }
+        else if (pt.Y == bounds.Height)
+        {
+            if (dir == NW) next_dir = SW;
+            if (dir == NE) next_dir = SE;
+        }
+    }
 
     dir = next_dir;
+
+    // 현재위치와 그 위치에서의 방향 표시
+    //Console.WriteLine(" 현재위치:{0,8}  이동거리:{1,4}  방향:{2}", pt, move, DirToString(dir));
+
+    if (move >= t)
+    {
+        //Console.WriteLine("이동거리 초과: {0}", move);
+        Console.WriteLine("{0} {1}", pt.X, pt.Y);
+        break;
+    }
 }
 
-Console.WriteLine("{0} {1}", pt.X, pt.Y);
-Console.WriteLine("end");
 
-
-//for (int i = 0; i < t; i++)
-//{
-//    // 동일한 좌표와 방향을 갖는 경우가 있었는지 확인한다. 
-//    // 만약 그런 경우를 찾는다면 이후는 동일하다. 
-
-
-//    Point next_pt = new Point(pt.X, pt.Y);
-
-
-
-    
-//    if (i > 0 &&
-//        pt_first.X == pt.X &&
-//        pt_first.Y == pt.Y &&
-//        dir_first == dir) 
-//    {
-
-//        move_cnt_to_final = t % routine_cnt;
-//        Console.WriteLine("동일한 경우 발견. {0}개 마다 반복되는 것으로 보임", routine_cnt);
-//        Console.WriteLine("이후 반복이 예상되는 {0} 루틴은 건너뜀", (int)(t / routine_cnt));
-//        Console.WriteLine("추가 진행할 이동 수 : {0}", move_cnt_to_final);
-
-//        i += ((int)(t / routine_cnt) * routine_cnt);
-//        is_repeat = true;        
-//    }
-
-
-
-//    if (i % 1000 == 0 ||
-//        i < 100)
-//    {
-//        Console.WriteLine("[{0,3}], pos ({1}, {2}),  dir:{3}", i, pt.X, pt.Y, dir);
-//    }
-
-//    // 이동한다
-//    // 다음 방향 전환하는 지점까지 빠르게 이동한다.
-
-
-//    int d = 1;
-
-//    switch (dir)
-//    {
-//        case NE:
-
-//            // x, y 중 어떤부분지 먼저 닿는지 본다. 
-//            {
-//                int dx = bounds.Width - pt.X;
-//                int dy = bounds.Height - pt.Y;
-//                d = Math.Min(dx, dy);
-
-//                next_pt.X += d;
-//                next_pt.Y += d;
-//            }
-//            break;
-//        case SE:
-//            {
-//                int dx = bounds.Width - pt.X;
-//                int dy = pt.Y;
-//                d = Math.Min(dx, dy);
-
-//                next_pt.X += d;
-//                next_pt.Y -= d;
-//            }
-//            break;
-//        case SW:
-//            {
-//                int dx = pt.X;
-//                int dy = pt.Y;
-//                d = Math.Min(dx, dy);
-
-//                next_pt.X -= d;
-//                next_pt.Y -= d;
-//            }
-//            break;
-//        case NW:
-//            {
-//                int dx = pt.X;
-//                int dy = bounds.Height - pt.Y;
-//                d = Math.Min(dx, dy);
-
-//                next_pt.X -= d;
-//                next_pt.Y += d;
-//            }
-//            break;
-//    }
-
-
-
-//    //if (move_cnt_to_final == 0)
-//    //{
-//    //    Console.WriteLine("종료");
-//    //    Console.WriteLine("{0} {1}", pt.X, pt.Y);
-//    //    break;
-//    //}
-//    //move_cnt_to_final--;
-
-
-//    routine_cnt += d;
-//    i += d;
-
-
-//    pt = next_pt;
-//}
-
-
-////if (is_repeat == false)
-//{
-//    Console.WriteLine("{0} {1}", pt.X, pt.Y);
-//}
-
-
-
-////StringBuilder sb = new StringBuilder();
-////sb.AppendFormat("time: {0}  p:{1} q:{2} ", i, pt.X, pt.Y);
-////switch (dir)
-////{
-////    case NW: sb.AppendFormat("NW"); break;
-////    case NE: sb.AppendFormat("NE"); break;
-////    case SW: sb.AppendFormat("SW"); break;
-////    case SE: sb.AppendFormat("SE"); break;
-////}
-////Console.WriteLine(sb.ToString());
-
-
+//sw.Stop();
 //Console.WriteLine("elapsed {0:N0} ms", sw.ElapsedMilliseconds);
+
+#endif
