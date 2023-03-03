@@ -21,7 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p2583_area", "p2583_area\p2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p10799_metal_rod", "p10799_metal_rod\p10799_metal_rod.csproj", "{6155FDED-D524-4635-81F6-ACEA65C91AF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p13302_resort", "p13302_resord\p13302_resort.csproj", "{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p13302_resort", "p13302_resord\p13302_resort.csproj", "{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "day_0303", "day_0303", "{9F8B50FA-7063-4195-B8A4-82BE546D64C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p1193_분수찾기", "p1193_분수찾기\p1193_분수찾기.csproj", "{8C37810D-8C6D-4E10-9474-40D7B5F8F107}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,9 +73,16 @@ Global
 		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{415DB56E-5FF4-4CA6-9667-93CF75D49AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C37810D-8C6D-4E10-9474-40D7B5F8F107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C37810D-8C6D-4E10-9474-40D7B5F8F107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C37810D-8C6D-4E10-9474-40D7B5F8F107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C37810D-8C6D-4E10-9474-40D7B5F8F107}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8C37810D-8C6D-4E10-9474-40D7B5F8F107} = {9F8B50FA-7063-4195-B8A4-82BE546D64C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF812A12-87B1-4D5D-8DFA-0A2B86A91B1C}
